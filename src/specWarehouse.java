@@ -1,4 +1,5 @@
 import java.util.LinkedList;
+import java.io.Serializable;
 
 /*
  * This information system is popular in multiple businesses, where we need to control product inventory stocking and purchasing.

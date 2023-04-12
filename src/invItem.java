@@ -5,6 +5,8 @@
  *  each warehouse's inventory stock. Another form to enter product order verifies if each product has enough inventory (quantity). 
  *  If the product order is approved, the inventory of those ordered products is updated.
  */
+import java.io.Serializable;
+
 public class invItem {
 	//ID, name, description, price, and quantity.
 	private int ID;
