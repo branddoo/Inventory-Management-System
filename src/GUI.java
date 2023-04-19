@@ -167,6 +167,7 @@ public class GUI extends JFrame {
 		manPanel.add(btnPullWarehouse);
 		
 		ManageTextArea = new JTextArea();
+		ManageTextArea.setLineWrap(true);
 		ManageTextArea.setRows(8);
 		ManageTextArea.setColumns(40);
 		manPanel.add(ManageTextArea);
@@ -181,6 +182,11 @@ public class GUI extends JFrame {
 		txtModWarehouseName.setColumns(10);
 		
 		btnModWarehouseName = new JButton("Mod Name");
+		btnModWarehouseName.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				btnModWarehouseNameClicked();
+			}
+		});
 		btnModWarehouseName.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		manPanel.add(btnModWarehouseName);
 		
@@ -269,7 +275,15 @@ public class GUI extends JFrame {
 	}
 
 
-    private void btnModItemClicked() {
+    protected void btnModWarehouseNameClicked() {
+		// TODO Auto-generated method stub
+    	sWare.setName(txtModWarehouseName.getText());
+		ComboBoxUpdate();
+		saveToCSV();
+	}
+
+
+	private void btnModItemClicked() {
         // Check if both warehouse and item are selected
         if (sWare == null || sItem == null) {
             JOptionPane.showMessageDialog(null, "Please select a warehouse and an item first.");
@@ -294,6 +308,7 @@ public class GUI extends JFrame {
             sItem.setPrice(price);
             sItem.setQuantity(quantity);
             // Save the updated list of warehouses and items to the CSV file
+            ComboBoxUpdate();
             saveToCSV();
             // Show a success message
             JOptionPane.showMessageDialog(null, "Item updated successfully.");
