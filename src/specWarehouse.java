@@ -29,4 +29,16 @@ public class specWarehouse {
 	public String toString() {
 		return "ID: " + id + ", Name: " + name;
 	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public LinkedList<invItem> getInv() {
+		return inv;
+	}
+	public void setInv(LinkedList<invItem> inv) {
+		this.inv = inv;
+	}
 }
