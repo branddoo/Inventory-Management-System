@@ -49,6 +49,7 @@ public class GUI extends JFrame {
 	private JButton btnPullWarehouse;
 	private JTextArea ManageTextArea;
 	private specWarehouse sWare;
+	private invItem sItem;
 
 	/**
 	 * Launch the application.
@@ -89,8 +90,9 @@ public class GUI extends JFrame {
 	private JButton btnNewItem;
 	
 	public GUI() {
-		loadFromCSV();
 		
+		loadFromCSV();
+	
 		setTitle("Warehouse Manager");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 540, 461);
@@ -132,6 +134,7 @@ public class GUI extends JFrame {
 				btnAddWarehouseClicked();
 			}
 		});
+		
 		newPanel.add(btnAddWarehouse);
 		
 		NewWareTXTarea = new JTextArea();
@@ -148,7 +151,7 @@ public class GUI extends JFrame {
 		WarehouseSelect.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		manPanel.add(WarehouseSelect);
 		
-		//String[] itemsArray = items.toArray(new String[items.size()]);
+		
 		mPanelComboBox = new JComboBox();
 		mPanelComboBox.setMinimumSize(new Dimension(55, 22));
 		mPanelComboBox.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -265,46 +268,39 @@ public class GUI extends JFrame {
 		ComboBoxUpdate();
 	}
 
-	private void btnModItemClicked() {
-	    if (selectedWarehouse == null || selectedItem == null) {
-	        JOptionPane.showMessageDialog(null, "Please select a warehouse and an item first.");
-	        return;
-	    }
 
-	    String itemId = txtItemId.getText().trim();
-	    String itemName = txtItemName.getText().trim();
-	    String itemDescription = txtItemDescription.getText().trim();
-	    String itemPrice = txtItemPrice.getText().trim();
-	    String itemQuantity = txtItemQuantity.getText().trim();
-
-	    if (itemId.isEmpty() || itemName.isEmpty() || itemDescription.isEmpty() || itemPrice.isEmpty() || itemQuantity.isEmpty()) {
-	        JOptionPane.showMessageDialog(null, "Please fill in all the item fields.");
-	        return;
-	    }
-
-	    try {
-	        int id = Integer.parseInt(itemId);
-	        double price = Double.parseDouble(itemPrice);
-	        int quantity = Integer.parseInt(itemQuantity);
-
-	        selectedItem.setID(id);
-	        selectedItem.setName(itemName);
-	        selectedItem.setDescription(itemDescription);
-	        selectedItem.setPrice(price);
-	        selectedItem.setQuantity(quantity);
-
-	        // Update the item in the selected warehouse's inventory
-	        selectedWarehouse.updateItem(selectedItem);
-
-	        // Save the updated data to the CSV file
-	        saveToCSV();
-
-	        JOptionPane.showMessageDialog(null, "Item updated successfully.");
-	    } catch (NumberFormatException e) {
-	        JOptionPane.showMessageDialog(null, "Please enter valid values for the ID, price, and quantity fields.");
-	    }
-	}
-
+    private void btnModItemClicked() {
+        // Check if both warehouse and item are selected
+        if (sWare == null || sItem == null) {
+            JOptionPane.showMessageDialog(null, "Please select a warehouse and an item first.");
+            return;
+        }
+        // Get the values from the text fields
+        String itemName = txtItemName.getText().trim();
+        String itemDescription = txtItemDesc.getText().trim();
+        String itemPrice = txtPrice.getText().trim();
+        String itemQuantity = txtQuantity.getText().trim();
+        // Validate input fields
+        if (itemName.isEmpty() || itemDescription.isEmpty() || itemPrice.isEmpty() || itemQuantity.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please fill in all the item fields.");
+            return;
+        }
+        try {
+            double price = Double.parseDouble(itemPrice);
+            int quantity = Integer.parseInt(itemQuantity);
+            // Update the item with the new values
+            sItem.setName(itemName);
+            sItem.setDescription(itemDescription);
+            sItem.setPrice(price);
+            sItem.setQuantity(quantity);
+            // Save the updated list of warehouses and items to the CSV file
+            saveToCSV();
+            // Show a success message
+            JOptionPane.showMessageDialog(null, "Item updated successfully.");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please enter valid values for the price and quantity fields.");
+        }
+    }
 	protected void btnNewItemClicked() {
 		System.out.println("New Item Clicked");
 		String itemName = JOptionPane.showInputDialog(null, "Enter item name:");
@@ -330,6 +326,7 @@ public class GUI extends JFrame {
 		for (invItem item : sWare.inv) {
 			if (item.getName().equals(selectedItemName)) {
 				selectedItem = item;
+				sItem=item;
 				break;
 			}
 		}
@@ -340,7 +337,6 @@ public class GUI extends JFrame {
 			txtQuantity.setText(String.valueOf(selectedItem.getQuantity()));
 		}
 	}	
-
 	protected void btnPullWarehouseClicked(){
 		String selectedWarehouseName = (String) mPanelComboBox.getSelectedItem();
 		selectedWarehouseName = selectedWarehouseName.trim();
@@ -354,12 +350,11 @@ public class GUI extends JFrame {
 				for(invItem item : sWare.inv) {
 					ManageTextArea.append("\t"+item.toString()+"\n");
 				}
+				ComboBoxUpdate();
 				break;
 			}
-			ComboBoxUpdate();
 		}
 	}
-
 	protected void btnAddWarehouseClicked() {
 		specWarehouse warehouse = new specWarehouse(txtID.getText(),txtWName.getText());
 		Warehouses.add(warehouse);
@@ -369,18 +364,19 @@ public class GUI extends JFrame {
 		saveToCSV();
 	}
 	protected void ComboBoxUpdate() {
-		mPanelComboBox.removeAllItems();
-		for(specWarehouse e:Warehouses) {
-			mPanelComboBox.addItem(e.getName());
-		}
-		ComboBoxItem.removeAllItems();
-		for(invItem item : sWare.inv) {
-			ManageTextArea.append("\t"+item.toString()+"\n");
-			ComboBoxItem.addItem(item.getName());
-		}
+	    mPanelComboBox.removeAllItems();
+	    for(specWarehouse e:Warehouses) {
+	        mPanelComboBox.addItem(e.getName());
+	    }
+	    System.out.println(sWare);
+	    if (sWare != null) { // Add this null check
+	        ComboBoxItem.removeAllItems();
+	        for(invItem item : sWare.inv) {
+	        	System.out.println(item.toString());
+	            ComboBoxItem.addItem(item.getName());
+	        }
+	    }
 	}
-	
-	
 	private void saveToCSV() {
 	    try (FileWriter fileWriter = new FileWriter("SaveData.csv")) {
 	        for (specWarehouse warehouse : Warehouses) {
